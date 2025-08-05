@@ -3,7 +3,7 @@
 import json
 import sys
 
-USAGE = "foundry_script_gas_report <./broadcast/path/to/run-latest.json>"
+USAGE = "forge_script_gas_report <./broadcast/path/to/run-latest.json>"
 
 if len(sys.argv) != 2:
     print(USAGE)
