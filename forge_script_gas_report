@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import json
+import sys
+
+USAGE = "foundry_script_gas_report <./broadcast/path/to/run-latest.json>"
+
+if len(sys.argv) != 2:
+    print(USAGE)
+    exit()
+
+with open(sys.argv[1]) as f:
+    run_result = json.load(f)
+
+
+txs = run_result["transactions"]
+receipts = {
+    receipt["transactionHash"]: receipt
+    for receipt in run_result["receipts"]
+}
+
+def label_call(tx):
+    func = tx["function"]
+    return func[:func.index('(')]
+
+def label_create(tx):
+    return " ".join(
+        [
+            "new",
+            tx["contractName"],
+        ]
+    )
+
+label_fns = {
+    "CALL": label_call,
+    "CREATE": label_create,
+}
+
+SUCCESS = "0x1"
+
+for tx in txs:
+    typ = tx["transactionType"]
+    label = label_fns[typ](tx)
+    print(label, ': ', sep='', end='')
+    receipt = receipts.get(tx["hash"])
+    if receipt is None:
+        # NOTE unsure yet what can cause this
+        print("missing receipt")
+        continue
+    gas_used = int(receipt["gasUsed"], 16)
+    if receipt["status"] == SUCCESS:
+        print(gas_used)
+    else:
+        print(gas_used, "(reverted)")
