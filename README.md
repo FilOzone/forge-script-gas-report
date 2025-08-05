@@ -2,6 +2,12 @@
 
 Creates a gas report from the `run-*.json` result of `forge script --broadcast`.
 
+### Usage
+
+```sh
+forge_script_gas_report broadcast/Contract.sol/$CHAIN_ID/run-latest.json
+```
+
 ### Why not use `forge snapshot`
 
 Measuring gas is important for optimizing smart contracts.
